@@ -159,6 +159,9 @@
     reusable: false
   };
 
+  var sanitizeHTML = function (v) {
+    return v;
+  };
 
   // PUBLIC FUNCTIONS
   // *************************************************************************************************************
@@ -237,6 +240,13 @@
     return init(_$ || $);
   };
 
+  // Set an HTML sanitizer which will be called each time the jQuery html
+  // function is called
+  exports.setHTMLSanitizer = function (fn) {
+    sanitizeHTML = fn ? fn : function(v) {
+      return v;
+    };
+  };
 
   // CORE HELPER FUNCTIONS
   // *************************************************************************************************************
@@ -276,7 +286,7 @@
       onEscape: options.onEscape
     };
 
-    body.find('.bootbox-body').html(options.message);
+    body.find('.bootbox-body').html(sanitizeHTML(options.message));
 
     // Only attempt to create buttons if at least one has 
     // been defined in the options object
@@ -297,7 +307,7 @@
             break;
         }
 
-        button.html(b.label);
+        button.html(sanitizeHTML(b.label));
         footer.append(button);
 
         callbacks[key] = b.callback;
@@ -354,7 +364,7 @@
 
     if (options.title) {
       body.before(header);
-      dialog.find('.modal-title').html(options.title);
+      dialog.find('.modal-title').html(sanitizeHTML(options.title));
     }
 
     if (options.closeButton) {
@@ -891,7 +901,7 @@
 
     if ($.trim(options.message) !== '') {
       // Add the form to whatever content the user may have added.
-      var message = $(templates.promptMessage).html(options.message);
+      var message = $(templates.promptMessage).html(sanitizeHTML(options.message));
       form.prepend(message);
       options.message = form;
     }
